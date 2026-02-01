@@ -20,6 +20,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddFeatureFlagStore();
+builder.Services.AddRepositories();
 
 var app = builder.Build();
 

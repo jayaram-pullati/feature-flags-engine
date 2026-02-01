@@ -19,6 +19,18 @@ public sealed class FeatureFlag
     Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim();
   }
 
+  public void SetDefaultState(bool state)
+  {
+    DefaultState = state;
+  }
+
+  public void SetDescription(string? description)
+  {
+    Description = string.IsNullOrWhiteSpace(description)
+        ? null
+        : description.Trim();
+  }
+
   public void UpdateDefaultState(bool newState) => DefaultState = newState;
 
   public void UpdateDescription(string? description)
