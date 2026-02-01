@@ -1,4 +1,5 @@
 using FeatureFlags.Infrastructure.DI;
+using FeatureFlags.Infrastructure.Stores;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,12 +19,20 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddFeatureFlagStore();
 
 var app = builder.Build();
+
+// Load feature flags into cache
+using (var scope = app.Services.CreateScope())
+{
+  var loader = scope.ServiceProvider.GetRequiredService<FeatureFlagSnapshotLoader>();
+  await loader.LoadAsync();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();
