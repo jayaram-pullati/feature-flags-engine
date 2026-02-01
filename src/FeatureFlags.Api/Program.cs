@@ -1,4 +1,6 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+using FeatureFlags.Infrastructure.DI;
+
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -14,6 +16,8 @@ builder.Services.AddSwaggerGen(options =>
         options.IncludeXmlComments(xmlPath);
     }
 });
+
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
