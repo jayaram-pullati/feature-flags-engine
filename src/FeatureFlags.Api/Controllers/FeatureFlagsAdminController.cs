@@ -1,33 +1,23 @@
+using Asp.Versioning;
 using FeatureFlags.Infrastructure.Stores;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FeatureFlags.Api.Controllers;
 
 [ApiController]
-[Route("admin/feature-flags")]
-public sealed class FeatureFlagsAdminController : ControllerBase
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/admin/feature-flags")]
+public sealed class FeatureFlagsAdminController(FeatureFlagSnapshotLoader loader, CachedFeatureFlagStore store)
+    : ControllerBase
 {
-  private readonly FeatureFlagSnapshotLoader _loader;
-
-  public FeatureFlagsAdminController(FeatureFlagSnapshotLoader loader)
-  {
-    _loader = loader;
-  }
-
   [HttpGet("status")]
-  public IActionResult Status([FromServices] CachedFeatureFlagStore store)
-  {
-    return Ok(new
-    {
-      features = store.FeatureCount,
-      overrides = store.OverrideCount
-    });
-  }
+  public IActionResult Status()
+      => Ok(new { features = store.FeatureCount, overrides = store.OverrideCount });
 
   [HttpPost("refresh")]
-  public async Task<IActionResult> Refresh()
+  public async Task<IActionResult> Refresh(CancellationToken ct)
   {
-    await _loader.LoadAsync();
+    await loader.LoadAsync(ct);
     return Ok(new { message = "Snapshot refreshed." });
   }
 }
