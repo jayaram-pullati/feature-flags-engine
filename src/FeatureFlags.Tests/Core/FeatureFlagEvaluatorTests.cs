@@ -1,27 +1,38 @@
 using FeatureFlags.Core.Domain;
 using FeatureFlags.Core.Errors;
 using FeatureFlags.Core.Evaluation;
+using FeatureFlags.Core.Validation;
 using FluentAssertions;
 
 namespace FeatureFlags.Tests.Core;
 
 public sealed class FeatureFlagEvaluatorTests
 {
-  private static FeatureFlag NewFeature(string key, bool defaultState)
-      => new(Guid.NewGuid(), key, defaultState, "test");
-
   [Fact]
-  public void IsEnabled_ReturnsDefault_WhenNoOverridesExist()
+  public void Evaluate_ThrowsValidationException_WhenContextIsNull()
   {
     // Arrange
-    var feature = NewFeature("NewSearch", defaultState: false);
-    var store = new TestFeatureFlagStore().AddFeature(feature);
-    var ctx = new FeatureEvaluationContext(userId: null, groupIds: null, region: null);
-
+    var store = new TestFeatureFlagStore().AddFeature("new-search", defaultState: false);
     var sut = new FeatureFlagEvaluator(store);
 
     // Act
-    var result = sut.Evaluate(feature.Key, ctx);
+    Action act = () => sut.Evaluate("new-search", null!);
+
+    // Assert
+    act.Should().Throw<ValidationException>()
+        .WithMessage("Context cannot be null.");
+  }
+
+  [Fact]
+  public void Evaluate_ReturnsDefault_WhenNoOverridesExist()
+  {
+    // Arrange
+    var store = new TestFeatureFlagStore().AddFeature("NewSearch", defaultState: false);
+    var sut = new FeatureFlagEvaluator(store);
+    var ctx = new FeatureEvaluationContext(userId: null, groupIds: null, region: null);
+
+    // Act
+    var result = sut.Evaluate("NewSearch", ctx);
 
     // Assert
     result.Enabled.Should().BeFalse();
@@ -29,124 +40,115 @@ public sealed class FeatureFlagEvaluatorTests
   }
 
   [Fact]
-  public void IsEnabled_UsesUserOverride_WhenUserOverrideExists()
+  public void Evaluate_UsesUserOverride_WhenUserOverrideExists()
   {
-    var feature = NewFeature("CheckoutV2", defaultState: false);
+    // Arrange
     var store = new TestFeatureFlagStore()
-        .AddFeature(feature)
-        .AddOverride(feature.Id, OverrideType.User, "u123", state: true);
+        .AddFeature("CheckoutV2", defaultState: false)
+        .AddOverride("CheckoutV2", OverrideType.User, OverrideTarget.Normalize("u123"), state: true);
 
+    var sut = new FeatureFlagEvaluator(store);
     var ctx = new FeatureEvaluationContext(userId: "u123", groupIds: new[] { "beta" }, region: "IN");
-    var sut = new FeatureFlagEvaluator(store);
 
-    var result = sut.Evaluate(feature.Key, ctx);
+    // Act
+    var result = sut.Evaluate("CheckoutV2", ctx);
 
+    // Assert
     result.Enabled.Should().BeTrue();
     result.Source.Should().Be(EvaluationSource.UserOverride);
   }
 
   [Fact]
-  public void IsEnabled_UserOverride_WinsOverGroupOverride()
+  public void Evaluate_UserOverride_WinsOverGroupOverride()
   {
-    var feature = NewFeature("CheckoutV2", defaultState: true);
+    // Arrange
     var store = new TestFeatureFlagStore()
-        .AddFeature(feature)
-        .AddOverride(feature.Id, OverrideType.User, "u123", state: false)
-        .AddOverride(feature.Id, OverrideType.Group, "beta", state: true);
+        .AddFeature("CheckoutV2", defaultState: true)
+        .AddOverride("CheckoutV2", OverrideType.User, OverrideTarget.Normalize("u123"), state: false)
+        .AddOverride("CheckoutV2", OverrideType.Group, OverrideTarget.Normalize("beta"), state: true);
 
+    var sut = new FeatureFlagEvaluator(store);
     var ctx = new FeatureEvaluationContext(userId: "u123", groupIds: new[] { "beta" }, region: null);
-    var sut = new FeatureFlagEvaluator(store);
 
-    var result = sut.Evaluate(feature.Key, ctx);
+    // Act
+    var result = sut.Evaluate("CheckoutV2", ctx);
 
+    // Assert
     result.Enabled.Should().BeFalse();
     result.Source.Should().Be(EvaluationSource.UserOverride);
   }
 
   [Fact]
-  public void IsEnabled_UsesFirstMatchingGroupOverride_ByContextOrder()
+  public void Evaluate_UsesFirstMatchingGroupOverride_ByContextOrder()
   {
-    // Decision: first match wins based on context group order.
-    // This keeps behaviour deterministic without needing group priority tables.
-
-    var feature = NewFeature("NewSearch", defaultState: false);
+    // Arrange
     var store = new TestFeatureFlagStore()
-        .AddFeature(feature)
-        .AddOverride(feature.Id, OverrideType.Group, "beta", state: false)
-        .AddOverride(feature.Id, OverrideType.Group, "admin", state: true);
+        .AddFeature("NewSearch", defaultState: false)
+        .AddOverride("NewSearch", OverrideType.Group, OverrideTarget.Normalize("beta"), state: false)
+        .AddOverride("NewSearch", OverrideType.Group, OverrideTarget.Normalize("admin"), state: true);
 
-    // beta comes first => should win (false)
-    var ctx = new FeatureEvaluationContext(userId: null, groupIds: new[] { "beta", "admin" }, region: null);
     var sut = new FeatureFlagEvaluator(store);
+    var ctx = new FeatureEvaluationContext(userId: null, groupIds: new[] { "beta", "admin" }, region: null);
 
-    var result = sut.Evaluate(feature.Key, ctx);
+    // Act
+    var result = sut.Evaluate("NewSearch", ctx);
 
+    // Assert
     result.Enabled.Should().BeFalse();
     result.Source.Should().Be(EvaluationSource.GroupOverride);
   }
 
   [Fact]
-  public void IsEnabled_GroupOverride_WinsOverRegionOverride_WhenNoUserOverride()
+  public void Evaluate_GroupOverride_WinsOverRegionOverride_WhenNoUserOverride()
   {
-    var feature = NewFeature("NewSearch", defaultState: false);
+    // Arrange
     var store = new TestFeatureFlagStore()
-        .AddFeature(feature)
-        .AddOverride(feature.Id, OverrideType.Group, "beta", state: true)
-        .AddOverride(feature.Id, OverrideType.Region, "IN", state: false);
+        .AddFeature("NewSearch", defaultState: false)
+        .AddOverride("NewSearch", OverrideType.Group, OverrideTarget.Normalize("beta"), state: true)
+        .AddOverride("NewSearch", OverrideType.Region, RegionCode.Normalize("IN"), state: false);
 
-    var ctx = new FeatureEvaluationContext(userId: null, groupIds: new[] { "beta" }, region: "IN");
     var sut = new FeatureFlagEvaluator(store);
+    var ctx = new FeatureEvaluationContext(userId: null, groupIds: new[] { "beta" }, region: "IN");
 
-    var result = sut.Evaluate(feature.Key, ctx);
+    // Act
+    var result = sut.Evaluate("NewSearch", ctx);
 
+    // Assert
     result.Enabled.Should().BeTrue();
     result.Source.Should().Be(EvaluationSource.GroupOverride);
   }
 
   [Fact]
-  public void IsEnabled_UsesRegionOverride_WhenNoUserOrGroupOverride()
+  public void Evaluate_UsesRegionOverride_WhenNoUserOrGroupOverride()
   {
-    var feature = NewFeature("NewSearch", defaultState: false);
+    // Arrange
     var store = new TestFeatureFlagStore()
-        .AddFeature(feature)
-        .AddOverride(feature.Id, OverrideType.Region, "IN", state: true);
+        .AddFeature("NewSearch", defaultState: false)
+        .AddOverride("NewSearch", OverrideType.Region, RegionCode.Normalize("IN"), state: true);
 
-    var ctx = new FeatureEvaluationContext(userId: null, groupIds: null, region: "in"); // lower case input
     var sut = new FeatureFlagEvaluator(store);
+    var ctx = new FeatureEvaluationContext(userId: null, groupIds: null, region: "in");
 
-    var result = sut.Evaluate(feature.Key, ctx);
+    // Act
+    var result = sut.Evaluate("NewSearch", ctx);
 
+    // Assert
     result.Enabled.Should().BeTrue();
     result.Source.Should().Be(EvaluationSource.RegionOverride);
   }
 
   [Fact]
-  public void IsEnabled_RegionOverride_DoesNotApply_WhenRegionNotProvided()
-  {
-    var feature = NewFeature("NewSearch", defaultState: false);
-    var store = new TestFeatureFlagStore()
-        .AddFeature(feature)
-        .AddOverride(feature.Id, OverrideType.Region, "IN", state: true);
-
-    var ctx = new FeatureEvaluationContext(userId: null, groupIds: null, region: null);
-    var sut = new FeatureFlagEvaluator(store);
-
-    var result = sut.Evaluate(feature.Key, ctx);
-
-    result.Enabled.Should().BeFalse();
-    result.Source.Should().Be(EvaluationSource.Default);
-  }
-
-  [Fact]
   public void Evaluate_ThrowsFeatureNotFound_WhenFeatureDoesNotExist()
   {
+    // Arrange
     var store = new TestFeatureFlagStore();
+    var sut = new FeatureFlagEvaluator(store);
     var ctx = new FeatureEvaluationContext();
 
-    var sut = new FeatureFlagEvaluator(store);
-
+    // Act
     Action act = () => sut.Evaluate("does-not-exist", ctx);
 
+    // Assert
     act.Should().Throw<FeatureNotFoundException>()
         .WithMessage("Feature 'does-not-exist' was not found.");
   }
@@ -154,14 +156,15 @@ public sealed class FeatureFlagEvaluatorTests
   [Fact]
   public void Evaluate_TreatsFeatureKeyCaseInsensitively()
   {
-    var feature = NewFeature("NewSearch", defaultState: true);
-    var store = new TestFeatureFlagStore().AddFeature(feature);
-
+    // Arrange
+    var store = new TestFeatureFlagStore().AddFeature("NewSearch", defaultState: true);
     var sut = new FeatureFlagEvaluator(store);
     var ctx = new FeatureEvaluationContext();
 
+    // Act
     var result = sut.Evaluate("NEWSEARCH", ctx);
 
+    // Assert
     result.Enabled.Should().BeTrue();
     result.Source.Should().Be(EvaluationSource.Default);
   }
