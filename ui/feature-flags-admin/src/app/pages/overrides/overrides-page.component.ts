@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectorRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 import { OverridesService } from '../../core/services/overrides.service';
 
@@ -17,6 +18,7 @@ type TargetType = 'user' | 'group' | 'region';
 export class OverridesPageComponent {
   private readonly overrides = inject(OverridesService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly route = inject(ActivatedRoute);
 
   // Inputs
   featureKey = '';
@@ -31,6 +33,12 @@ export class OverridesPageComponent {
   loading = false;
   successText: string | null = null;
   errorText: string | null = null;
+
+  ngOnInit(): void {
+    const key = (this.route.snapshot.queryParamMap.get('key') ?? '').trim();
+    if (key) this.featureKey = key;
+  }
+
 
   async upsert(type: TargetType): Promise<void> {
     if (this.loading) return;

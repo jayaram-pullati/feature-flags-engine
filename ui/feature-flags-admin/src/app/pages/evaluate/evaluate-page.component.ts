@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectorRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 import { EvaluationService } from '../../core/services/evaluation.service';
 import { EvaluateFeatureResponse } from '../../core/models/evaluation.model';
@@ -16,6 +17,7 @@ import { EvaluateFeatureResponse } from '../../core/models/evaluation.model';
 export class EvaluatePageComponent {
   private readonly service = inject(EvaluationService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly route = inject(ActivatedRoute);
 
   // Inputs
   featureKey = '';
@@ -27,6 +29,11 @@ export class EvaluatePageComponent {
   loading = false;
   result: EvaluateFeatureResponse | null = null;
   errorText: string | null = null;
+
+  ngOnInit(): void {
+    const key = (this.route.snapshot.queryParamMap.get('key') ?? '').trim();
+    if (key) this.featureKey = key;
+  }
 
   async evaluate(): Promise<void> {
     // Prevent concurrent calls
