@@ -1,0 +1,41 @@
+<h2>Evaluate</h2>
+
+<div class="panel">
+  <div class="row">
+    <label>Feature Key *</label>
+    <input [(ngModel)]="featureKey" placeholder="e.g. new-search" />
+  </div>
+
+  <div class="row">
+    <label>User Id (optional)</label>
+    <input [(ngModel)]="userId" placeholder="e.g. u123" />
+  </div>
+
+  <div class="row">
+    <label>Group Ids (optional, comma-separated)</label>
+    <input [(ngModel)]="groupIdsCsv" placeholder="e.g. beta, admin" />
+  </div>
+
+  <div class="row">
+    <label>Region (optional)</label>
+    <input [(ngModel)]="region" placeholder="e.g. IN" />
+  </div>
+
+  <div class="actions">
+    <button type="button" (click)="evaluate()" [disabled]="loading">
+      {{ loading ? 'Evaluating...' : 'Evaluate' }}
+    </button>
+
+    <button type="button" (click)="clear()" [disabled]="loading">Clear</button>
+  </div>
+</div>
+
+<div *ngIf="errorText" class="error">
+  {{ errorText }}
+</div>
+
+<div *ngIf="result" class="result">
+  <h3>Result</h3>
+  <div><b>Enabled:</b> {{ result.enabled }}</div>
+  <div><b>Source:</b> {{ result.source }}</div>
+</div>

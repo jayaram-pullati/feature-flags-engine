@@ -1,0 +1,56 @@
+:host {
+  display: block;
+}
+
+.panel {
+  max-width: 720px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+}
+
+.row {
+  margin-bottom: 12px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* ✅ Force these blocks to be visible even if global styles conflict */
+:host .error {
+  display: block !important;
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #f2b8b8;
+  background: #ffecec;
+  white-space: pre-wrap;
+}
+
+:host .result {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #cfe7cf;
+  background: #f0fff0;
+
+  position: relative;
+  z-index: 1;
+}
