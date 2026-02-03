@@ -13,6 +13,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
         <nav style="display:flex; flex-direction:column; gap:8px;">
           <a routerLink="/features">Features</a>
           <a routerLink="/evaluate">Evaluate</a>
+          <a routerLink="/overrides">Overrides</a>
           <a routerLink="/admin/status">Admin Status</a>
         </nav>
       </aside>

@@ -1,0 +1,66 @@
+<h2>Overrides</h2>
+
+<div class="panel">
+  <div class="row">
+    <label>Feature Key *</label>
+    <input [(ngModel)]="featureKey" placeholder="e.g. new-search" (input)="clearMessages()" />
+  </div>
+
+  <div class="row-inline">
+    <label>State</label>
+    <select [(ngModel)]="state" (change)="clearMessages()">
+      <option [ngValue]="true">Enabled (true)</option>
+      <option [ngValue]="false">Disabled (false)</option>
+    </select>
+  </div>
+
+  <hr />
+
+  <h3>User override</h3>
+  <div class="row">
+    <label>User Id *</label>
+    <input [(ngModel)]="userId" placeholder="e.g. u123" (input)="clearMessages()" />
+  </div>
+  <div class="actions">
+    <button type="button" (click)="upsert('user')" [disabled]="loading">
+      {{ loading ? 'Working...' : 'Upsert User' }}
+    </button>
+    <button type="button" (click)="remove('user')" [disabled]="loading">Delete User</button>
+  </div>
+
+  <hr />
+
+  <h3>Group override</h3>
+  <div class="row">
+    <label>Group Id *</label>
+    <input [(ngModel)]="groupId" placeholder="e.g. beta" (input)="clearMessages()" />
+  </div>
+  <div class="actions">
+    <button type="button" (click)="upsert('group')" [disabled]="loading">
+      {{ loading ? 'Working...' : 'Upsert Group' }}
+    </button>
+    <button type="button" (click)="remove('group')" [disabled]="loading">Delete Group</button>
+  </div>
+
+  <hr />
+
+  <h3>Region override</h3>
+  <div class="row">
+    <label>Region *</label>
+    <input [(ngModel)]="region" placeholder="e.g. IN" (input)="clearMessages()" />
+  </div>
+  <div class="actions">
+    <button type="button" (click)="upsert('region')" [disabled]="loading">
+      {{ loading ? 'Working...' : 'Upsert Region' }}
+    </button>
+    <button type="button" (click)="remove('region')" [disabled]="loading">Delete Region</button>
+  </div>
+</div>
+
+<div *ngIf="successText" class="success">
+  {{ successText }}
+</div>
+
+<div *ngIf="errorText" class="error">
+  {{ errorText }}
+</div>

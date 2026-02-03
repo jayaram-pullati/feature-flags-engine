@@ -1,0 +1,58 @@
+:host {
+  display: block;
+}
+
+.panel {
+  max-width: 720px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+}
+
+.row {
+  margin-bottom: 12px;
+}
+
+.row-inline {
+  margin-bottom: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+input, select {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 6px;
+}
+
+hr {
+  margin: 18px 0;
+}
+
+.success {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #bde5bd;
+  background: #f0fff0;
+}
+
+.error {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #f2b8b8;
+  background: #ffecec;
+  white-space: pre-wrap;
+}
