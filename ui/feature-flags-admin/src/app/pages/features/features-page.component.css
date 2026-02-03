@@ -1,0 +1,17 @@
+table {
+  margin-top: 16px;
+  width: 100%;
+}
+
+.dialog {
+  padding: 16px;
+  border: 1px solid #ccc;
+  margin-top: 16px;
+  width: 400px;
+  background: #fafafa;
+}
+
+label {
+  display: block;
+  margin-top: 12px;
+}
