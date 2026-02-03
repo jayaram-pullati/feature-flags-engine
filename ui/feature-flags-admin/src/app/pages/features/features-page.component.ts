@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 import { Feature } from '../../core/models/feature.model';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CreateFeatureDialogComponent } from './create-feature-dialog.component';
 import { UpdateFeatureDialogComponent } from './update-feature-dialog.component';
@@ -14,6 +15,7 @@ import { UpdateFeatureDialogComponent } from './update-feature-dialog.component'
 })
 export class FeaturesPageComponent implements OnInit {
   private readonly service = inject(FeatureFlagsService);
+  private readonly router = inject(Router);
 
   features: Feature[] = [];
   loading = true;
@@ -41,6 +43,10 @@ export class FeaturesPageComponent implements OnInit {
     this.createOpen = false;
     this.load();
   }
+
+  details(f: any) {
+  this.router.navigate(['/features', f.key]);
+}
 
   openEdit(feature: Feature) {
     this.editTarget = feature;

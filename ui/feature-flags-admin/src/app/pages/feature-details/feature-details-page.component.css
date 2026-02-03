@@ -1,0 +1,23 @@
+.panel {
+  border: 1px solid #ddd;
+  background: #fafafa;
+  padding: 16px;
+  max-width: 680px;
+}
+
+.row {
+  margin: 8px 0;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.error {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #f2b8b8;
+  background: #ffecec;
+}

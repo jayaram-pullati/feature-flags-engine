@@ -1,0 +1,30 @@
+<h2>Feature Details</h2>
+
+<div *ngIf="loading">Loading...</div>
+
+<div class="error" *ngIf="errorText">
+  {{ errorText }}
+</div>
+
+<div *ngIf="!loading && feature" class="panel">
+  <h3>{{ feature.key }}</h3>
+
+  <div class="row">
+    <b>Default State:</b> {{ feature.defaultState }}
+  </div>
+
+  <div class="row">
+    <b>Description:</b> {{ feature.description || '—' }}
+  </div>
+
+  <div class="actions">
+    <button (click)="goEdit()">Edit Feature</button>
+    <button (click)="goOverrides()">Manage Overrides</button>
+    <button (click)="goEvaluate()">Evaluate</button>
+  </div>
+
+  <hr />
+
+  <h3>Overrides</h3>
+  <p>Override listing endpoint not yet available. Will be added in a future commit.</p>
+</div>

@@ -20,6 +20,7 @@
       <td>{{ f.defaultState }}</td>
       <td>{{ f.description }}</td>
       <td>
+        <button (click)="details(f)">Details</button>
         <button (click)="openEdit(f)">Edit</button>
         <button (click)="delete(f)">Delete</button>
       </td>
