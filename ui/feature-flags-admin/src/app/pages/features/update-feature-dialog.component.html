@@ -1,0 +1,24 @@
+<div class="backdrop">
+  <div class="dialog">
+    <h3>Edit Feature: {{ feature.key }}</h3>
+
+    <div class="row">
+      <label>Default State</label>
+      <input type="checkbox" [(ngModel)]="model.defaultState" />
+    </div>
+
+    <div class="row">
+      <label>Description</label>
+      <input [(ngModel)]="model.description" placeholder="Optional" />
+    </div>
+
+    <div *ngIf="errorText" class="error">{{ errorText }}</div>
+
+    <div class="actions">
+      <button type="button" (click)="save()" [disabled]="loading">
+        {{ loading ? 'Saving...' : 'Save' }}
+      </button>
+      <button type="button" (click)="cancel()" [disabled]="loading">Cancel</button>
+    </div>
+  </div>
+</div>

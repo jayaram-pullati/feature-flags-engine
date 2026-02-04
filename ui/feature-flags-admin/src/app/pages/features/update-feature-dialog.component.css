@@ -1,0 +1,49 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dialog {
+  background: #fff;
+  padding: 16px;
+  width: 520px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.row {
+  margin-bottom: 12px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+input[type="checkbox"] {
+  width: auto;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.error {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #f2b8b8;
+  background: #ffecec;
+}

@@ -15,7 +15,7 @@ export class FeatureFlagsService {
   }
 
   get(key: string) {
-    return this.api.get<Feature>(`/api/v1/features/${key}`);
+    return this.api.get<Feature>(`/api/v1/features/${encodeURIComponent(key)}`);
   }
 
   create(req: CreateFeatureRequest) {

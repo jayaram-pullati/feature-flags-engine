@@ -1,6 +1,7 @@
 <h2>Features</h2>
 
-<button (click)="openCreate()">+ Create Feature</button>
+<!-- ✅ Create must call openCreate() -->
+<button type="button" (click)="openCreate()">+ Create Feature</button>
 
 <div *ngIf="loading">Loading...</div>
 
@@ -20,23 +21,27 @@
       <td>{{ f.defaultState }}</td>
       <td>{{ f.description }}</td>
       <td>
-        <button (click)="details(f)">Details</button>
-        <button (click)="openEdit(f)">Edit</button>
-        <button (click)="delete(f)">Delete</button>
+        <!-- ✅ Details must navigate -->
+        <button type="button" (click)="details(f)">Details</button>
+
+        <!-- ✅ Edit must call openEdit(f) -->
+        <button type="button" (click)="openEdit(f)">Edit</button>
+
+        <button type="button" (click)="delete(f)">Delete</button>
       </td>
     </tr>
   </tbody>
 </table>
 
-<!-- Create dialog -->
+<!-- dialogs -->
 <app-create-feature-dialog
-  *ngIf="createOpen"
+  *ngIf="createOpen && !editTarget"
   (closed)="closeCreate()">
 </app-create-feature-dialog>
 
-<!-- Edit dialog -->
 <app-update-feature-dialog
-  *ngIf="editTarget"
+  *ngIf="editTarget && !createOpen"
   [feature]="editTarget"
-  (closed)="closeEdit()">
+  (closed)="closeEdit($event)">
 </app-update-feature-dialog>
+

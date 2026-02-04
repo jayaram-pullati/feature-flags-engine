@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectorRef, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UiNavigationService } from '../../core/navigation/ui-navigation.service';
 import { firstValueFrom, timeout } from 'rxjs';
 
 import { FeatureFlagsService } from '../../core/services/feature-flags.service';
@@ -23,12 +24,13 @@ export class FeatureDetailsPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly nav = inject(UiNavigationService);
+
+  featureKey = ''; 
 
   loading = true;
   errorText: string | null = null;
   feature: FeatureDto | null = null;
-
-  featureKey = '';
 
   async ngOnInit(): Promise<void> {
     this.featureKey = (this.route.snapshot.paramMap.get('key') ?? '').trim();
@@ -67,14 +69,9 @@ export class FeatureDetailsPageComponent {
         this.errorText = 'Unable to load feature. Check API and proxy configuration.';
       }
     } finally {
-      // ✅ GUARANTEED reset
       this.loading = false;
       this.cdr.detectChanges();
     }
-  }
-
-  goEdit(): void {
-    this.router.navigate(['/features'], { queryParams: { edit: this.featureKey } });
   }
 
   goOverrides(): void {
