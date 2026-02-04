@@ -1,0 +1,42 @@
+<h2>Admin Status</h2>
+
+<div class="actions">
+  <button type="button" (click)="load()" [disabled]="loading || refreshing">
+    {{ loading ? 'Loading...' : 'Reload' }}
+  </button>
+
+  <button type="button" (click)="refresh()" [disabled]="loading || refreshing">
+    {{ refreshing ? 'Refreshing...' : 'Refresh Snapshot' }}
+  </button>
+</div>
+
+<div *ngIf="errorText" class="error">
+  {{ errorText }}
+</div>
+
+<div *ngIf="lastRefreshMessage" class="success">
+  {{ lastRefreshMessage }}
+</div>
+
+<div *ngIf="loading" class="muted">Loading...</div>
+
+<div *ngIf="!loading && status" class="panel">
+  <div class="row">
+    <div class="label">Features</div>
+    <div class="value">{{ status.features }}</div>
+  </div>
+
+  <div class="row">
+    <div class="label">Overrides</div>
+    <div class="value">{{ status.overrides }}</div>
+  </div>
+
+  <div class="row" *ngIf="lastUpdated">
+    <div class="label">Last Updated</div>
+    <div class="value">{{ lastUpdated | date:'medium' }}</div>
+  </div>
+</div>
+
+<p class="hint">
+  “Refresh Snapshot” reloads the in-memory cache used for fast flag evaluation.
+</p>
