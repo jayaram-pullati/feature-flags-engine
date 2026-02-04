@@ -1,4 +1,4 @@
-Feature Flags Engine
+# Feature Flags Engine
 
 A runtime feature management system implemented using .NET 10, C#, SQL Server, and Angular 21.
 It provides a production-grade feature flag engine supporting:
@@ -12,7 +12,7 @@ It provides a production-grade feature flag engine supporting:
 ✅ Strict precedence rules
 ✅ Admin UI for evaluating, managing features, overrides & engine status
 
-📘 Overview
+## 📘 Overview
 
 Feature Flags (a.k.a Feature Toggles) allow teams to control system behavior at runtime, without redeploying code.
 They enable:
@@ -45,7 +45,8 @@ Extensive test coverage (Core, API, Infrastructure)
 
 Angular admin UI to view, create, update, override & evaluate features
 
-🧱 Tech Stack
+## 🧱 Tech Stack
+
 Backend
 
 .NET 10
@@ -74,7 +75,7 @@ Angular Forms + HttpClient
 
 Proxy configuration for API routing
 
-🏛️ Architecture & Design
+## 🏛️ Architecture & Design
 
 This project follows Clean Architecture principles:
 
@@ -104,14 +105,18 @@ This project follows Clean Architecture principles:
 └── ui
     └── feature-flags-admin         (Angular UI)
 
-🧠 SOLID Principles Adopted
-Principle	Implementation
+## 🧠 SOLID Principles Adopted
+
+### Principle	Implementation
+
 S – Single Responsibility	Every class handles one responsibility: evaluator, repository, snapshot loader, validators, controllers
 O – Open/Closed	Evaluator is closed to modification but open for extension (more override types possible)
 L – Liskov Substitution	Interfaces & abstractions properly enforced
 I – Interface Segregation	Separate repositories: IFeatureFlagRepository, IFeatureOverrideRepository, IFeatureFlagStore
 D – Dependency Inversion	Core layer never references Infrastructure; DI injects abstractions
-🧩 Design Patterns Used
+
+### 🧩 Design Patterns Used
+
 Pattern	Usage
 Repository Pattern	Clean persistence logic
 Unit of Work	Coordinated SaveChangesAsync() across repositories
@@ -119,7 +124,8 @@ Factory / Mapper	Entity ↔ Domain conversions
 Strategy	Evaluator precedence strategy for overrides
 Gateway Pattern	Snapshot loader reads DB → Cached store
 Decorator (implicit)	Exception middleware wraps request pipeline
-⚡️ Key Features
+
+### Key Features
 1️⃣ Fast Runtime Evaluation
 
 The Evaluator performs zero I/O — all lookups are in-memory.
@@ -161,7 +167,8 @@ Check engine status
 
 Refresh snapshot
 
-📦 Setup Instructions
+### Setup Instructions
+
 1. Clone Repository
 git clone https://github.com/jayaram-pullati/feature-flags-engine
 cd feature-flags-engine
@@ -185,13 +192,13 @@ cd src/FeatureFlags.Api
 dotnet run
 
 
-API runs at:
+#### API runs at:
 
 http://localhost:5042
 https://localhost:7215
 
 
-Swagger UI:
+#### Swagger UI:
 
 http://localhost:5042/swagger
 
@@ -201,7 +208,7 @@ cd src/FeatureFlags.Tests
 dotnet test
 
 
-Test suite includes:
+### Test suite includes:
 
 ✔ Core evaluator
 ✔ Domain validators
@@ -225,37 +232,47 @@ http://localhost:4200
 
 UI talks to backend via Angular proxy (proxy.conf.json).
 
-📡 Example API Requests
+## Example API Requests
+
 Create Feature (Idempotent POST)
+```
 POST /api/v1/features
 {
   "key": "dark-mode",
   "defaultState": true,
   "description": "UI theme"
 }
+```
 
 Update Feature
+```
 PUT /api/v1/features/dark-mode
 {
   "defaultState": false,
   "description": "Temporary disable"
 }
+```
 
 Upsert Override
+```
 PUT /api/v1/features/dark-mode/overrides/user/u123
 {
   "state": true
 }
+```
 
 Evaluate
+```
 POST /api/v1/evaluate/dark-mode
 {
   "userId": "u123",
   "groupIds": ["beta"],
   "region": "IN"
 }
+```
 
-📝 Assumptions & Tradeoffs
+## 📝 Assumptions & Tradeoffs
+
 Assumptions
 
 Feature keys are globally unique
@@ -266,7 +283,7 @@ Region codes must be uppercase (ISO-like)
 
 Evaluator should never hit the database (only cached store)
 
-Tradeoffs (Intentional)
+## Tradeoffs (Intentional)
 
 1. No authentication yet
 → UI & API open for simplicity (future-ready).
@@ -279,7 +296,8 @@ Backend intentionally does not expose “list overrides per feature”.
 On each mutation, UI calls POST /refresh.
 Keeps evaluator extremely fast and loosely coupled from persistence.
 
-🚀 What’s Next (If we had more time)
+## 🚀 What’s Next (If we had more time)
+
 🔐 Authentication & Authorization
 
 OAuth2 + Bearer tokens
@@ -306,7 +324,7 @@ Caching invalidation events
 
 Outbox pattern for distributed refresh
 
-☁️ Cloud Extensions
+## ☁️ Cloud Extensions
 
 Redis-backed cache for multi-instance API
 
@@ -320,7 +338,7 @@ JavaScript SDK
 
 Streaming updates (push mode)
 
-📦 Final Notes
+## 📦 Final Notes
 
 This project demonstrates production instincts:
 
